@@ -12,7 +12,7 @@ API_URL = "https://app.yoso.fun/api/markets/0xd1bc6d6736488bcad0c9ce78764f9c52a1
 CHECK_INTERVAL = 60  # Check every 60 seconds (1 minute)
 
 # Price threshold
-THRESHOLD = 0.40
+THRESHOLD = 0.50
 
 # File to store user chat IDs
 USERS_FILE = "users.json"
