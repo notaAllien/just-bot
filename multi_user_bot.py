@@ -13,8 +13,8 @@ BTC_API_URL = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
 CHECK_INTERVAL = 60  # Check every 60 seconds (1 minute)
 
 # Price thresholds
-YES_THRESHOLD = 0.50
-BTC_THRESHOLD = 95000  # Set your desired BTC threshold in USD
+YES_THRESHOLD = 0.80
+BTC_THRESHOLD = 68000  # Set your desired BTC threshold in USD
 
 # File to store user chat IDs
 USERS_FILE = "users.json"
