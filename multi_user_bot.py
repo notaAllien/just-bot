@@ -9,7 +9,7 @@ from datetime import datetime
 # For local testing: Replace the default value with your token
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 API_URL = "https://app.yoso.fun/api/markets/0xd1bc6d6736488bcad0c9ce78764f9c52a12a28f9"
-BTC_API_URL = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
+BTC_API_URL = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
 CHECK_INTERVAL = 60  # Check every 60 seconds (1 minute)
 
 # Price thresholds
@@ -160,13 +160,13 @@ def fetch_yes_price():
 
 
 def fetch_btc_price():
-    """Fetch BTC price from Binance API"""
+    """Fetch BTC price from CoinGecko API"""
     try:
         response = requests.get(BTC_API_URL, timeout=10)
         
         if response.status_code == 200:
             data = response.json()
-            btc_price = float(data['price'])
+            btc_price = float(data['bitcoin']['usd'])
             return btc_price
         else:
             print(f"❌ BTC API Error: Status {response.status_code}")
@@ -187,6 +187,15 @@ def main():
     print(f"⏱️  Checking every {CHECK_INTERVAL} seconds")
     print(f"💡 Use /check command to verify bot status")
     print(f"👥 Current subscribers: {len(load_users())}\n")
+    
+    # Do an immediate first check
+    print("🔄 Performing initial price check...")
+    yes_price = fetch_yes_price()
+    btc_price = fetch_btc_price()
+    if yes_price is not None and btc_price is not None:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] YES: {yes_price:.4f} | BTC: ${btc_price:,.2f} | Users: {len(load_users())}")
+    else:
+        print("⚠️  Initial price check failed - will retry in 60 seconds")
     
     # Counter for checking new users (check every 10 seconds)
     user_check_counter = 0
@@ -236,6 +245,8 @@ def main():
                     elif btc_price > BTC_THRESHOLD and already_notified_btc:
                         already_notified_btc = False
                         print(f"✅ Reset - BTC price back above ${BTC_THRESHOLD:,}")
+                else:
+                    print(f"[{datetime.now().strftime('%H:%M:%S')}] ⚠️  Failed to fetch prices - will retry in 60 seconds")
             
             # Wait 1 second and increment counter
             time.sleep(1)
